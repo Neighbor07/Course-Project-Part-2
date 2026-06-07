@@ -1,0 +1,72 @@
+---
+- name: Configure Minecraft Server
+  hosts: minecraft
+  become: yes
+  vars:
+    minecraft_dir: /opt/minecraft
+
+  tasks:
+    - name: Wait for SSH connection to become available
+      wait_for_connection:
+        delay: 10
+        timeout: 120
+
+    - name: Update apt cache and upgrade system packages
+      apt:
+        update_cache: yes
+        upgrade: dist
+
+    - name: Install Java Runtime Environment (JRE)
+      apt:
+        name: openjdk-21-jre-headless
+        state: present
+
+    - name: Create Minecraft application directory
+      file:
+        path: "{{ minecraft_dir }}"
+        state: directory
+        owner: ubuntu
+        group: ubuntu
+
+    - name: Download Minecraft Server jar
+      get_url:
+        url: https://piston-data.mojang.com/v1/objects/8dd1a28015f51b1803213892b50b7b4fc76e594d/server.jar
+        dest: "{{ minecraft_dir }}/server.jar"
+        owner: ubuntu
+        group: ubuntu
+
+    - name: Accept Minecraft EULA
+      copy:
+        dest: "{{ minecraft_dir }}/eula.txt"
+        content: "eula=true\n"
+        owner: ubuntu
+        group: ubuntu
+
+    - name: Create Systemd Service File for auto-start and graceful shutdown
+      copy:
+        dest: /etc/systemd/system/minecraft.service
+        content: |
+          [Unit]
+          Description=Minecraft Server
+          After=network.target
+
+          [Service]
+          User=ubuntu
+          WorkingDirectory={{ minecraft_dir }}
+          ExecStart=/usr/bin/java -Xmx1024M -Xms1024M -jar server.jar nogui
+          Restart=on-failure
+          # Explicitly fixes the improper shutdown issue
+          KillSignal=SIGINT
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Reload systemd daemon to recognize new service
+      systemd:
+        daemon_reload: yes
+
+    - name: Enable and start Minecraft service
+      systemd:
+        name: minecraft
+        enabled: yes
+        state: started
