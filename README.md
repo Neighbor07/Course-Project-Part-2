@@ -1,8 +1,8 @@
 # Course-Project-Part-2
 Course Project Part 2 - CS 312
-This repository contains an automated Infrastructure as Code (IaC) pipeline designed to provision, configure, and initialize a cloud-hosted Minecraft server on Amazon Web Services (AWS). By leveraging modern DevOps tools—specifically Terraform for infrastructure provisioning and Ansible for configuration management—this setup eliminates the need for manual interaction with the AWS Management Console.
+This repository contains an automated Infrastructure as Code (IaC) pipeline designed to provision, configure, and initialize a cloud-hosted Minecraft server on Amazon Web Services (AWS). By leveraging modern DevOps tools. Specifically Terraform for infrastructure provisioning and Ansible for configuration management—this setup eliminates the need for manual interaction with the AWS Management Console.
 
-System Requirements & Tooling
+System requirements and Tools
 To execute this pipeline successfully, your local deployment control node must be configured with the following specific software tools, versions, and architectural environments:
 
 Operating System Host: Windows 10 or Windows 11 utilizing Windows Subsystem for Linux (WSL2) running an Ubuntu 24.04 LTS distribution image.
